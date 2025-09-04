@@ -6,7 +6,7 @@ import com.jobsadda.dto.UserRequestDTO;
 import com.jobsadda.dto.UserResponeDTO;
 import com.jobsadda.entity.User;
 
-@Mapper(componentModel = "Spring")
+@Mapper(componentModel = "spring")
 public interface UserMapper {
 
 	UserResponeDTO toDTO(User user);
