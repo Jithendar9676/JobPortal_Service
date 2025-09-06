@@ -12,8 +12,10 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.jobsadda.dto.LogInDTO;
 import com.jobsadda.dto.UserRequestDTO;
 import com.jobsadda.dto.UserResponeDTO;
+import com.jobsadda.exception.JobsAddaException;
 import com.jobsadda.service.UserService;
 
 import jakarta.validation.Valid;
@@ -30,10 +32,16 @@ public class UserController {
 	private static final Logger log=LoggerFactory.getLogger(UserController.class);
 	 
 	@PostMapping("/registerUser")
-	public ResponseEntity<UserResponeDTO> registerUser(@RequestBody @Valid UserRequestDTO requestDTO){
+	public ResponseEntity<UserResponeDTO> registerUser(@RequestBody @Valid UserRequestDTO requestDTO) throws JobsAddaException{
 		log.info("user details {}",requestDTO);
 		UserResponeDTO userRespone=new UserResponeDTO();
 		userRespone=userService.registerUser(requestDTO);
 		return new ResponseEntity<UserResponeDTO>(userRespone,HttpStatus.CREATED);
+	}
+	
+	@PostMapping("/logInUser")
+	public ResponseEntity<UserResponeDTO> logInUser(@RequestBody @Valid LogInDTO logInDTO) throws JobsAddaException{
+		log.info("Login details {}",logInDTO);
+		return new ResponseEntity<UserResponeDTO>(userService.logInUser(logInDTO),HttpStatus.OK);
 	}
 }
