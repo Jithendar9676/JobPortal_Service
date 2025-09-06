@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import com.jobsadda.exception.JobsAddaException;
 
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
 
@@ -26,14 +27,14 @@ public class ExceptionControllerAdvice {
 	private Environment environment;
 	private static final Logger log=LoggerFactory.getLogger(ExceptionControllerAdvice.class);
 	@ExceptionHandler(Exception.class)
-	public ResponseEntity<ErrorInfo>gernalException(Exception exception){
+	public ResponseEntity<ErrorInfo>gernalException(Exception exception ,HttpServletRequest request){
 		 log.error("Unexpected error occurred", exception);
-	     ErrorInfo errorInfo=new ErrorInfo(exception.getMessage(),HttpStatus.INTERNAL_SERVER_ERROR.value(),LocalDateTime.now());
+	     ErrorInfo errorInfo=new ErrorInfo(exception.getMessage(),HttpStatus.INTERNAL_SERVER_ERROR.value(),LocalDateTime.now(),request.getRequestURI());
 	     return new ResponseEntity<>(errorInfo,HttpStatus.INTERNAL_SERVER_ERROR);
 	}
 	
 	@ExceptionHandler(JobsAddaException.class)
-	public ResponseEntity<ErrorInfo>gernalException(JobsAddaException exception){
+	public ResponseEntity<ErrorInfo>gernalException(JobsAddaException exception,HttpServletRequest request){
 		 log.error("Unexpected error occurred", exception);
 		 String msg= environment.getProperty(exception.getMessage());
 		 HttpStatus status;
@@ -45,11 +46,11 @@ public class ExceptionControllerAdvice {
 			 status=HttpStatus.BAD_REQUEST;
 		 }
 		 
-	     ErrorInfo errorInfo=new ErrorInfo(msg,status.value(),LocalDateTime.now());
+	     ErrorInfo errorInfo=new ErrorInfo(msg,status.value(),LocalDateTime.now(),request.getRequestURI());
 	     return new ResponseEntity<>(errorInfo,status);
 	}
 	@ExceptionHandler({MethodArgumentNotValidException.class,ConstraintViolationException.class})
-	public ResponseEntity<ErrorInfo>validatorExceptionHandler(Exception exception){
+	public ResponseEntity<ErrorInfo>validatorExceptionHandler(Exception exception,HttpServletRequest request){
 		String msg="";
 		if(exception instanceof MethodArgumentNotValidException methodException) {
 			msg=methodException.getAllErrors().stream().map(ObjectError::getDefaultMessage).collect(Collectors.joining(", "));
@@ -57,7 +58,7 @@ public class ExceptionControllerAdvice {
 			ConstraintViolationException conException=(ConstraintViolationException) exception;
 			msg=conException.getConstraintViolations().stream().map(ConstraintViolation::getMessage).collect(Collectors.joining(", "));
 		}
-		ErrorInfo errorInfo=new ErrorInfo(msg,HttpStatus.BAD_REQUEST.value(),LocalDateTime.now());
+		ErrorInfo errorInfo=new ErrorInfo(msg,HttpStatus.BAD_REQUEST.value(),LocalDateTime.now(),request.getRequestURI());
 	     return new ResponseEntity<>(errorInfo,HttpStatus.BAD_REQUEST);
 	}
 }

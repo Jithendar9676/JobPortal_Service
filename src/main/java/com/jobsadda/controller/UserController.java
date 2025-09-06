@@ -41,7 +41,7 @@ public class UserController {
 	
 	@PostMapping("/logInUser")
 	public ResponseEntity<UserResponeDTO> logInUser(@RequestBody @Valid LogInDTO logInDTO) throws JobsAddaException{
-		log.info("Login details {}",logInDTO);
+		log.info("Login details {}",logInDTO.toString());
 		return new ResponseEntity<UserResponeDTO>(userService.logInUser(logInDTO),HttpStatus.OK);
 	}
 }

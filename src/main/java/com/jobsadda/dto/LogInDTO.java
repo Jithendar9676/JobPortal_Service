@@ -16,4 +16,10 @@ public class LogInDTO {
 	private String email;
 	@NotBlank(message = "{user.password.absent}")
 	private String password;
+	
+	@Override
+	public String toString() {
+	    return "LogInDTO{email='" + email + "', password='[PROTECTED]'}";
+	}
+
 }
