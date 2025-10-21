@@ -83,6 +83,9 @@ public class UserServiceImpl implements UserService{
 		if(!otpEntiry.getOtpCode().equals(otp)) {
 			throw new JobsAddaException("OTP_INCORRECT");
 		}
+		if(otpEntiry.getCreatedOn().isBefore(LocalDateTime.now().minusMinutes(5))) {
+			throw new JobsAddaException("OTP_NOT_FOUND");
+		}
 				return true;
 	}
 	@Override
@@ -94,7 +97,7 @@ public class UserServiceImpl implements UserService{
 		
 		return new ResponseDTO("Password changed successfully");
 	}
-	@Scheduled(fixedRate = 60000)
+	@Scheduled(fixedRate = 100000)
 	public void removeExpiredOtps() {
 		LocalDateTime expiry=LocalDateTime.now().minusMinutes(5);
 		ArrayList<Otp> expiredOtps=otpRepository.findByCreatedOnBefore(expiry);
